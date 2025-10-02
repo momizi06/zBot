@@ -8,7 +8,6 @@ require("./utils/chkEnvVars")([
     "defaultSpeakerPitchScale",
     "defaultSpeakerIntonationScale",
     "defaultSpeakerVolumeScale",
-
     "guildConfigsDir",
     "guildDictionariesDir"
 ]);

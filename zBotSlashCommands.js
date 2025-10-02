@@ -824,6 +824,13 @@ const zBotSlashCommands = [
     }
 ];
 
+/**
+ * 指定された範囲内に値を制限する
+ * @param {number} value - 制限する値
+ * @param {number} min - 最小値
+ * @param {number} max - 最大値
+ * @returns {number} - 制限された値
+ */
 function clamp(value, min, max){
     return Math.min(Math.max(value, min), max);
 }

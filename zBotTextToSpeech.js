@@ -98,7 +98,7 @@ async function voiceSynthesis(text, speaker){
 
     const audioQuery = await response_audio_query.json();
 
-    // どちらも設定されている場合は、音声合成クエリに適用
+    // プロパティがある場合のみ上書きする
     if(audioQuery.speedScale         !== void 0) audioQuery.speedScale         = speaker.speedScale;
     if(audioQuery.pitchScale         !== void 0) audioQuery.pitchScale         = speaker.pitchScale;
     if(audioQuery.intonationScale    !== void 0) audioQuery.intonationScale    = speaker.intonationScale;
