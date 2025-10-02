@@ -107,10 +107,10 @@ client.on(Events.MessageReactionAdd, async(reaction, user) => {
     return;
 });
 
-client.on('error', error => {
-    const timestamp = new Date().toISOString();
-    console.error(`${timestamp} [FATAL] Discord Client Error detected. Terminating process for PM2 restart.`);
+client.on(Events.Error, error => {
+    console.error("Discord Client Error detected. Terminating process.");
     console.error(error);
+
     process.exit(1);
 });
 
