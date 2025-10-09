@@ -102,7 +102,7 @@ const zBotSlashCommands = [
                 "channel_types": [ChannelType.GuildText],
                 "name": "text",
                 "description": "読み上げ「元」の「テキスト」チャンネルを選択してください",
-                "required": true
+                "required": false
             },
             
             {
@@ -110,17 +110,23 @@ const zBotSlashCommands = [
                 "channel_types": [ChannelType.GuildVoice],
                 "name": "voice",
                 "description": "読み上げ「先」の「ボイス」チャンネルを選択してください",
-                "required": true
+                "required": false
             }
         ],
 
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             const guildId = interaction.guildId;
 
-            const textCannelId = interaction.options.getChannel("text").id;
-            const voiceCannelId = interaction.options.getChannel("voice").id;
+            const textCannelId = interaction.options.getChannel("text")?.id ?? interaction.channel.id;
+            const voiceCannelId = interaction.options.getChannel("voice")?.id ?? interaction.member.voice.channel?.id;
+
+            if(!voiceCannelId){
+                await interaction.reply("ボイスチャネルに参加するか、明示的に指定してください");
+                return;
+            }
+
             const adapterCreator = interaction.guild.voiceAdapterCreator;
-    
+
             const connection = joinVoiceChannel({
                 "channelId": voiceCannelId,
                 "guildId": guildId,
@@ -182,7 +188,7 @@ const zBotSlashCommands = [
         "name": "list",
         "description": "話者IDの一覧を表示します",
 
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             let list = "";
 
             const speakers = await speakersWithStyles;
@@ -212,7 +218,7 @@ const zBotSlashCommands = [
             }
         ],
         
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             const guildId = interaction.guildId;
         
             const connection = getVoiceConnection(guildId);
@@ -300,7 +306,7 @@ const zBotSlashCommands = [
         "name": "random",
         "description": "話者をランダムに変更します",
         
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             const guildId = interaction.guildId;
         
             const connection = getVoiceConnection(guildId);
@@ -349,7 +355,7 @@ const zBotSlashCommands = [
             }
         ],
 
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             const guildId = interaction.guildId;
         
             const connection = getVoiceConnection(guildId);
@@ -395,7 +401,7 @@ const zBotSlashCommands = [
             }
         ],
 
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             const guildId = interaction.guildId;
         
             const connection = getVoiceConnection(guildId);
@@ -441,7 +447,7 @@ const zBotSlashCommands = [
             }
         ],
 
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             const guildId = interaction.guildId;
         
             const connection = getVoiceConnection(guildId);
@@ -487,7 +493,7 @@ const zBotSlashCommands = [
             }
         ],
 
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             const guildId = interaction.guildId;
         
             const connection = getVoiceConnection(guildId);
@@ -533,7 +539,7 @@ const zBotSlashCommands = [
             }
         ],
 
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             const guildId = interaction.guildId;
         
             const connection = getVoiceConnection(guildId);
@@ -584,7 +590,7 @@ const zBotSlashCommands = [
             }
         ],
 
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             const guildId = interaction.guildId;
 
             const connection = getVoiceConnection(guildId);
@@ -656,7 +662,7 @@ const zBotSlashCommands = [
             },
         ],
 
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             const guildId = interaction.guildId;
 
             const connection = getVoiceConnection(guildId);
@@ -693,7 +699,7 @@ const zBotSlashCommands = [
         "description": "リアクションスタンプ読み上げの有効・無効を切り替えます",
 
         
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             const guildId = interaction.guildId;
         
             const connection = getVoiceConnection(guildId);
@@ -730,7 +736,7 @@ const zBotSlashCommands = [
             },
         ],
 
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             const guildId = interaction.guildId;
 
             const connection = getVoiceConnection(guildId);
@@ -754,7 +760,7 @@ const zBotSlashCommands = [
         "name": "export",
         "description": "ギルドの設定をエクスポートします※ただしインポート昨日は未実装",
 
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             const guildId = interaction.guildId;
 
             const connection = getVoiceConnection(guildId);
@@ -784,7 +790,7 @@ const zBotSlashCommands = [
         "name" : "disconnect",
         "description": "設定の保存後、読み上げボットを切断します",
 
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             const guildId = interaction.guildId;
 
             const connection = getVoiceConnection(guildId);
@@ -811,7 +817,7 @@ const zBotSlashCommands = [
         "name": "help",
         "description": "ヘルプを表示します",
 
-        "excute": async function(interaction, zBotGData){
+        "execute": async function(interaction, zBotGData){
             let message = "";
             for(const command of zBotSlashCommands){
                 message += "/" + command.name + "\r\n";

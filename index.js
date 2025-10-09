@@ -14,6 +14,8 @@ const envCooldownDuration = parseInt(process.env.cooldownDuration);
 const { Client, GatewayIntentBits, Events } = require("discord.js");
 
 const client = new Client({ "intents": [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildVoiceStates,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.GuildMessageReactions,
@@ -73,7 +75,7 @@ client.on(Events.InteractionCreate, async(interaction) => {
         cooldowns.set(userId, now + envCooldownDuration);
         setTimeout(() => cooldowns.delete(userId), envCooldownDuration);
 
-        command.excute(interaction, zBotGData)
+        command.execute(interaction, zBotGData)
             .catch((error) => { console.error(error); });
 
         return;
