@@ -1,10 +1,9 @@
 # zBot
-音声変換にVOICEVOX（とその互換エンジン）を利用したDiscord用読み上げTTSBotです  
-複数のサーバー（ギルド）でも動作するように設計してますが、基本的には小規模運用想定となります  
-DBは使わずサーバーごとの設定ファイルでストア・リストアを行います  
-ファイルへのストア時は、事前に取得したハッシュ値との比較を行い差異があれば書き込まない仕様です  
-話者の情報はBot起動時にAPIで取得するので、VOICEVOXの話者の追加にはBotの再起動で追随できます  
-※VOICEVOXエンジンへのリクエストのキャッシュや負荷分散はNGINXで試行錯誤中です・・・  
+Discord用読み上げTTSBot  
+音声変換にVOICEVOX（とその互換エンジン）を利用  
+複数のサーバー（ギルド）でも動作しますが、基本的には小規模運用想定  
+DBは使わずサーバー（ギルド）の設定ファイルでストア・リストア    
+話者の情報はBot起動時にAPIで取得、話者の追加にはBotの再起動で追随  
 
 # 使い方(Slach Commnad)
 /connect  
@@ -40,10 +39,10 @@ DBは使わずサーバーごとの設定ファイルでストア・リストア
     ・・・ヘルプを表示します    
 
 # Dependencies(というよりは自分の環境)
-- Redhat Enterprise Linux 9（Minimal + Development Tools）またはWindows 11
-- Node.js v20
+- Redhat Enterprise Linux 9（Minimal + Development Tools）
+- Node.js v22
 - NPM Packages
-  - "@discordjs/opus" ※Windowsので導入失敗する場合は"opusscript"を指定
+  - "@discordjs/opus"
   - "@discordjs/voice"
   - "discord.js"
   - "dotenv"

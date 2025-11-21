@@ -47,3 +47,4 @@ autocompleteLimit    = 25
 queueTimeout         = 10000
 queuePollingInterval = 100
 dictionaryEntryLimit = 1000
+exitOnDiscordError   = true

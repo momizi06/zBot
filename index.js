@@ -5,11 +5,13 @@ require("./utils/chkEnvVars")([
     "token",
     "guildIds",
     "cooldownDuration",
+    "exitOnDiscordError"
 ]);
 
 const envToken = process.env.token;
 const envGuildIds = process.env.guildIds;
 const envCooldownDuration = parseInt(process.env.cooldownDuration);
+const envExitOnDiscordError = process.env.exitOnDiscordError?.toLowerCase() === "true";
 
 const { Client, GatewayIntentBits, Events } = require("discord.js");
 
@@ -110,10 +112,15 @@ client.on(Events.MessageReactionAdd, async(reaction, user) => {
 });
 
 client.on(Events.Error, error => {
-    console.error("Discord Client Error detected. Terminating process.");
+    console.error("Discord Clientのエラーを検知、プロセスを終了します");
     console.error(error);
 
-    process.exit(1);
+    if(envExitOnDiscordError) {
+        console.log("設定によりプロセスを終了します");
+        process.exit(1);
+    } else {
+        console.log("プロセスを継続します");
+    }
 });
 
 client.login(envToken);
