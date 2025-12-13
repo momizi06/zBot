@@ -52,18 +52,23 @@ async function zBotTextToSpeech(splitedText, speaker, player, queue){
         count--;
     }
 
-    const waveDatas = [];
+    try {
+        const waveDatas = [];
 
-    for(const text of splitedText){
-        const waveData = await voiceSynthesis(text, speaker);
-        if(!waveData) continue;
-        waveDatas.push(waveData);
-    }
+        for(const text of splitedText){
+            const waveData = await voiceSynthesis(text, speaker);
+            if(!waveData) continue;
+            waveDatas.push(waveData);
+        }
 
-    for(const waveData of waveDatas){
-        await entersState(player, AudioPlayerStatus.Idle, envQueueTimeout); // 前の音声再生が終わるまで待つ
-        if(!queue.includes(ticket)) return;  // キューから削除された場合は終了
-        player.play(waveData);
+        for(const waveData of waveDatas){
+            await entersState(player, AudioPlayerStatus.Idle, envQueueTimeout); // 前の音声再生が終わるまで待つ
+            if(!queue.includes(ticket)) return;  // キューから削除された場合は終了
+            player.play(waveData);
+        }
+    } catch(error) {
+        deQueue(queue, ticket);
+        throw error;
     }
 
     deQueue(queue, ticket);
@@ -99,11 +104,16 @@ async function voiceSynthesis(text, speaker){
     const audioQuery = await response_audio_query.json();
 
     // プロパティがある場合のみ上書きする
-    if(audioQuery.speedScale         !== void 0) audioQuery.speedScale         = speaker.speedScale;
-    if(audioQuery.pitchScale         !== void 0) audioQuery.pitchScale         = speaker.pitchScale;
-    if(audioQuery.intonationScale    !== void 0) audioQuery.intonationScale    = speaker.intonationScale;
-    if(audioQuery.volumeScale        !== void 0) audioQuery.volumeScale        = speaker.volumeScale;
-    if(audioQuery.tempoDynamicsScale !== void 0) audioQuery.tempoDynamicsScale = speaker.tempoDynamicsScale;
+    //if(audioQuery.speedScale         !== void 0) audioQuery.speedScale         = speaker.speedScale;
+    //if(audioQuery.pitchScale         !== void 0) audioQuery.pitchScale         = speaker.pitchScale;
+    //if(audioQuery.intonationScale    !== void 0) audioQuery.intonationScale    = speaker.intonationScale;
+    //if(audioQuery.volumeScale        !== void 0) audioQuery.volumeScale        = speaker.volumeScale;
+    //if(audioQuery.tempoDynamicsScale !== void 0) audioQuery.tempoDynamicsScale = speaker.tempoDynamicsScale;
+
+    // プロパティがある場合のみ上書きする
+    for(const [key, value] of Object.entries(speaker)){
+        if(audioQuery[key] !== void 0) audioQuery[key] = value;
+    }
 
     audioQuery.outputSamplingRate = envSamplingRate;
 
