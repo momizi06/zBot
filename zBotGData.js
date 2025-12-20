@@ -163,9 +163,9 @@ zBotGData.prototype.restoreData = function(guildId, path, target, initFunc){
         obj.__hash__ = hash;
 
         target[guildId] = obj;
-    }catch(e){
+    }catch(error){
          // エラーコードがENOENTの場合、ファイルが存在しないので、初期化処理を行う
-        if(e.code === "ENOENT"){
+        if(error.code === "ENOENT"){
             // 初期化関数を実行
             initFunc.call(this, guildId);
 
@@ -178,7 +178,7 @@ zBotGData.prototype.restoreData = function(guildId, path, target, initFunc){
             const hash = crypto.createHash("sha256").update(json).digest("hex");
             obj.__hash__ = hash;
         }else{
-            throw new Error(`Failed to read or parse file: ${path} (Guild: ${guildId}). Details: ${e.message}`);
+            throw new Error(`Failed to read or parse file: ${path} (Guild: ${guildId}). Details: ${error.message}`);
         }
     }
     
@@ -207,8 +207,8 @@ zBotGData.prototype.saveData = function(guildId, path, target){
     
         delete obj.__hash__;
         fs.writeFileSync(path, JSON.stringify(obj));
-    }catch(e){
-        throw new Error(`Failed to save file: ${path} (Guild: ${guildId}). Details: ${e.message}`);
+    }catch(error){
+        throw new Error(`Failed to save file: ${path} (Guild: ${guildId}). Details: ${error.message}`);
     }
 
     return true;

@@ -37,26 +37,26 @@ async function zBotTextToSpeech(splitedText, speaker, player, queue){
     const ticket = Symbol(); // キュー管理用の一意の識別子
     enQueue(queue, ticket);
 
-    let count = Math.floor(envQueueTimeout / envQueuePollingInterval);
+    try {
+        let count = Math.floor(envQueueTimeout / envQueuePollingInterval);
 
-    // タイムアウトまで待機（自分の順番になるまで）
-    while(queue[0] !== ticket){
-        if(count === 0){
-            deQueue(queue, ticket);
-            return;
+        // タイムアウトまで待機（自分の順番になるまで）
+        while(true){
+            if(count === 0) return;
+            if(!queue.includes(ticket)) return; // キューから削除されていた場合は終了
+            
+            if(queue[0] === ticket) break;
+
+            await setTimeout(envQueuePollingInterval);
+            count--;
         }
 
-        await setTimeout(envQueuePollingInterval);
-        
-        if(!queue.includes(ticket)) return; // キューから削除されていた場合は終了
-        count--;
-    }
-
-    try {
         const waveDatas = [];
 
         for(const text of splitedText){
             const waveData = await voiceSynthesis(text, speaker);
+            if(!queue.includes(ticket)) return;  // キューから削除された場合は終了
+
             if(!waveData) continue;
             waveDatas.push(waveData);
         }
@@ -64,14 +64,15 @@ async function zBotTextToSpeech(splitedText, speaker, player, queue){
         for(const waveData of waveDatas){
             await entersState(player, AudioPlayerStatus.Idle, envQueueTimeout); // 前の音声再生が終わるまで待つ
             if(!queue.includes(ticket)) return;  // キューから削除された場合は終了
+
             player.play(waveData);
         }
     } catch(error) {
-        deQueue(queue, ticket);
         throw error;
+    } finally {
+        deQueue(queue, ticket);
     }
 
-    deQueue(queue, ticket);
     return;
 }
 
