@@ -24,15 +24,16 @@ const { entersState, AudioPlayerStatus } = require("@discordjs/voice");
  * @param {string[]} splitedText - 分割されたテキスト
  * @param {object} speaker - 話者オブジェクト
  * @param {object} player - オーディオプレーヤー
- * @param {object} queue - キュー
  */
-async function zBotTextToSpeech(splitedText, speaker, player, queue){
+async function zBotTextToSpeech(splitedText, speaker, player){
     const fullTextLength = splitedText.reduce((sum, text) => sum + text.length, 0);
 
     // 文字数制限を超えた場合の処理
     if(fullTextLength > envVoiceServerTextLengthLimit){
         splitedText = ["文字数が上限を超えています"];
     }
+
+    const queue = getQueue(player);
 
     const ticket = Symbol(); // キュー管理用の一意の識別子
     enQueue(queue, ticket);
@@ -104,19 +105,20 @@ async function voiceSynthesis(text, speaker){
 
     const audioQuery = await response_audio_query.json();
 
-    // プロパティがある場合のみ上書きする
-    //if(audioQuery.speedScale         !== void 0) audioQuery.speedScale         = speaker.speedScale;
-    //if(audioQuery.pitchScale         !== void 0) audioQuery.pitchScale         = speaker.pitchScale;
-    //if(audioQuery.intonationScale    !== void 0) audioQuery.intonationScale    = speaker.intonationScale;
-    //if(audioQuery.volumeScale        !== void 0) audioQuery.volumeScale        = speaker.volumeScale;
-    //if(audioQuery.tempoDynamicsScale !== void 0) audioQuery.tempoDynamicsScale = speaker.tempoDynamicsScale;
 
     // プロパティがある場合のみ上書きする
-    for(const [key, value] of Object.entries(speaker)){
-        if(audioQuery[key] !== void 0) audioQuery[key] = value;
-    }
+    if(audioQuery.speedScale         !== void 0) audioQuery.speedScale         = speaker.speedScale;
+    if(audioQuery.pitchScale         !== void 0) audioQuery.pitchScale         = speaker.pitchScale;
+    if(audioQuery.intonationScale    !== void 0) audioQuery.intonationScale    = speaker.intonationScale;
+    if(audioQuery.volumeScale        !== void 0) audioQuery.volumeScale        = speaker.volumeScale;
+    if(audioQuery.tempoDynamicsScale !== void 0) audioQuery.tempoDynamicsScale = speaker.tempoDynamicsScale;
+    
+    // プロパティがある場合のみ上書きする
+    //for(const [key, value] of Object.entries(speaker)){
+    //    if(audioQuery[key] !== void 0) audioQuery[key] = value;
+    //}
 
-    audioQuery.outputSamplingRate = envSamplingRate;
+    if(audioQuery.outputSamplingRate !== void 0) audioQuery.outputSamplingRate = envSamplingRate;
 
     // 音声データの生成
     const response_synthesis = await fetch(server.baseURL + "/synthesis?speaker=" + speaker.id, {
@@ -134,6 +136,17 @@ async function voiceSynthesis(text, speaker){
     const waveData = createAudioResource(stream, { inputType: StreamType.Arbitrary });
     
     return waveData;
+}
+
+const playerQueues = new WeakMap();
+
+/**
+ * プレイヤーに対応するキューを取得または作成する
+ * @param {object} player 
+ * @returns {Array} queue
+ */
+function getQueue(player) {
+    return playerQueues.get(player) ?? playerQueues.set(player, []).get(player);
 }
 
 /**

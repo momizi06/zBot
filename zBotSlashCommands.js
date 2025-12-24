@@ -683,11 +683,10 @@ const zBotSlashCommands = [
     
             const speaker = memberSpeakerConfig;
             const player = connection.state.subscription.player;
-            const queue = zBotGData.initGuildQueueIfUndefined(guildId);
 
             await interaction.reply({ "content": "隠れてそっと発言します", "ephemeral": true });
 
-            await zBotTextToSpeech(splitedText, speaker, player, queue);
+            await zBotTextToSpeech(splitedText, speaker, player);
 
             return;
         }

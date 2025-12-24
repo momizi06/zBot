@@ -33,7 +33,6 @@ const crypto = require("crypto");
 function zBotGData(){
     this.zBotGuildConfigs      = {};
     this.zBotGuildDictionaries = {};
-    this.zBotGuildQueues       = {};
 }
 
 /**
@@ -78,7 +77,6 @@ zBotGData.prototype.initMemberSpeakerConfigIfUndefined = function(guildId, membe
     this.zBotGuildConfigs[guildId].memberSpeakerConfigs[memberId].engine ??= envDefaultSpeakerEngine;
     this.zBotGuildConfigs[guildId].memberSpeakerConfigs[memberId].id     ??= envDefaultSpeakerId;
 
-    // nullはdefault値として扱う(audio_queryを書き換えない)
     this.zBotGuildConfigs[guildId].memberSpeakerConfigs[memberId].speedScale         ??= envDefaultSpeakerSpeedScale;
     this.zBotGuildConfigs[guildId].memberSpeakerConfigs[memberId].pitchScale         ??= envDefaultSpeakerPitchScale;
     this.zBotGuildConfigs[guildId].memberSpeakerConfigs[memberId].intonationScale    ??= envDefaultSpeakerIntonationScale;
@@ -122,28 +120,6 @@ zBotGData.prototype.initGuildDictionary = function(guildId){
     this.zBotGuildDictionaries[guildId] = {};
 
     return this.initGuildDictionaryIfUndefined(guildId);
-}
-
-/**
- * ギルドのキューを取得する(未定義の場合は初期化を実施)
- * @param {string} guildId - ギルドID
- * @returns {object} - ギルドのキュー
- */
-zBotGData.prototype.initGuildQueueIfUndefined = function(guildId){
-    this.zBotGuildQueues[guildId] ??= [];
-
-    return this.zBotGuildQueues[guildId];
-}
-
-/**
- * ギルドのキューを初期化する
- * @param {string} guildId - ギルドID
- * @returns {object} - ギルドのキュー
- */
-zBotGData.prototype.initGuildQueue = function(guildId){
-    this.zBotGuildQueues[guildId] = [];
-
-    return this.initGuildQueueIfUndefined(guildId);
 }
 
 /**
@@ -257,7 +233,6 @@ zBotGData.prototype.saveDictionary = function(guildId){
 zBotGData.prototype.deleteGuildData = function(guildId){           
     delete this.zBotGuildConfigs[guildId];
     delete this.zBotGuildDictionaries[guildId];
-    delete this.zBotGuildQueues[guildId];
     
     return;
 }

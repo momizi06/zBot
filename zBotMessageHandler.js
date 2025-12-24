@@ -34,12 +34,10 @@ async function zBotMessageHandler(message, zBotGData){
     const dict = zBotGData.initGuildDictionaryIfUndefined(guildId);
 
     const splitedText = zBotTextPreprocessor(text, dict);
-    
     const speaker = memberSpeakerConfig;
     const player = connection.state.subscription.player;
-    const queue = zBotGData.initGuildQueueIfUndefined(guildId);
 
-    await zBotTextToSpeech(splitedText, speaker, player, queue);
+    await zBotTextToSpeech(splitedText, speaker, player);
 
     return;
 };
