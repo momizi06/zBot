@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  zbot:
+    build: .
+    restart: always
+    container_name: zbot-app
+    # ホスト側の .env ファイルを読み込む
+    env_file:
+      - .env
+    environment:
+      # Dockerネットワーク内でのVOICEVOXコンテナへのアクセス設定
+      # localhost ではなくサービス名 "voicevox" を指定します
+      - voiceServers=http://voicevox:50021#VOICEVOX
+    depends_on:
+      - voicevox
+    volumes:
+      # 設定ファイルや辞書ファイルを永続化・ホストと共有する場合
+      - ./guild_configs:/app/guild_configs
+      - ./guild_dictionaries:/app/guild_dictionaries
+      # ログなどの出力がある場合は適宜追加
+
+  voicevox:
+    image: voicevox/voicevox_engine:nvidia-latest
+    container_name: zbot-voicevox
+    restart: always
+    ports:
+      - "50021:50021"
+    # CPU版で動作させるための設定（必要な場合）
+    environment:
+      - VV_CPU_NUM_THREADS=4
